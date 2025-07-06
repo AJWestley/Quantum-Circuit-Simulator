@@ -85,36 +85,62 @@ class QuantumState:
         '''
         return np.abs(self.state).astype(float) ** 2
     
-    def U(self, gate: np.ndarray, start_qubit: int = 0, end_qubit: int = None) -> 'QuantumState':
+    def U(self, gate: np.ndarray, qubit: int = 0) -> 'QuantumState':
         '''
         Applies a quantum gate to the quantum state.
 
         Parameters:
         gate (np.ndarray): The quantum gate to apply, must be a unitary matrix.
-        start_qubit (int): The starting qubit index for the gate application.
-        end_qubit (int): The ending qubit index for the gate application. If None, applies to all qubits after the starting one.
+        qubit (int, optional): The index of the qubit to apply the gate to. Default 0.
 
         Returns:
         QuantumState: A new quantum state after applying the gate.
         '''
-        if end_qubit is None:
-            end_qubit = self.num_qubits
-        if start_qubit < 0 or end_qubit > self.num_qubits or start_qubit >= end_qubit:
-            raise ValueError("Invalid qubit indices for gate application.")
-        
-        n_qubits = end_qubit - start_qubit
-        if n_qubits <= 0:
-            raise ValueError("The number of qubits for the gate must be positive.")
 
-        validate_gate(gate, n_qubits)
+        k = int(np.log2(gate.shape[0]))
+        end = qubit + k
+
+        if qubit < 0 or end > self.num_qubits:
+            raise ValueError(f"Cannot apply gate to qubit range [{qubit}, {end}); out of bounds.")
+        if gate.shape != (2**k, 2**k):
+            raise ValueError("Gate must be a square matrix of size 2^k × 2^k.")
+
+        validate_gate(gate, k)  # Optional: checks unitarity etc.
+
+        # Build full operator: I ⊗ ... ⊗ G ⊗ ... ⊗ I
+        I = np.eye(2, dtype=complex)
+
+        # Create operator list, right-to-left (LSB = qubit 0)
+        ops = []
+        for i in reversed(range(self.num_qubits)):
+            if qubit <= i < end:
+                ops.append(None)  # placeholder for multi-qubit block
+            else:
+                ops.append(I)
+
+        # Insert the gate block
+        # Replace the first occurrence of k consecutive None with the full gate
+        gate_inserted = False
+        i = 0
+        while i <= len(ops) - k:
+            if all(x is None for x in ops[i:i+k]):
+                ops[i:i+k] = [gate]
+                gate_inserted = True
+                break
+            i += 1
+
+        if not gate_inserted:
+            raise RuntimeError("Failed to embed the gate correctly in the tensor product.")
+
+        # Kronecker product chain
+        full_gate = ops[0]
+        for op in ops[1:]:
+            full_gate = np.kron(full_gate, op)
+
+        # Apply to state
+        new_state = full_gate @ self.state
+        return QuantumState(new_state)
         
-        if gate.shape[0] != 2 ** n_qubits or gate.shape[1] != 2 ** n_qubits:
-            final_gate = U_gate(n_qubits, start_qubit, end_qubit)
-        else:
-            final_gate = gate
-        
-        return QuantumState(final_gate @ self.state)
-    
     def X(self, qubits: int | list[int] | range):
         '''
         Applies the Pauli-X gate to a specific qubit.

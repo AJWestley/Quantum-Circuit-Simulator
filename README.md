@@ -34,7 +34,7 @@ All methods return a new `QuantumState` object, making function chaining natural
 
 ---
 
-### Gate Application (`QuantumState.U(gate, start, end)` internally used)
+### Gate Application
 
 All gate methods accept:
 
@@ -82,6 +82,12 @@ qs.CRY(0, 1, theta=np.pi/2)
 qs.CRZ(0, 1, theta=np.pi/2)
 ```
 
+#### Unary Gates
+
+```python
+qs.U(np.array([[1, 1], [1, -1]]), 1)
+```
+
 ---
 
 ### Measurement
@@ -102,9 +108,8 @@ Both collapse the state and return a new `QuantumState` consistent with the resu
     - SX
     - SX dagger
 * **QASM Translation**
-* **Improved U Gate**.
 * **Circuit Visualiser**
-* **Unit Tests**.
+* **Unit Tests**
 
 ---
 
