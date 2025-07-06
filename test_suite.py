@@ -555,7 +555,7 @@ class TestQuantumState:
         with pytest.raises(ValueError):
             qs.CZ(0, 2)
         with pytest.raises(TypeError):
-            qs.CZ([0, 1], 2)
+            qs.CZ([0, 1], 0)
         with pytest.raises(TypeError):
             qs.CZ("invalid", 1)
         with pytest.raises(ValueError):
@@ -602,46 +602,6 @@ class TestQuantumState:
             qs.CH(0, -1)
         with pytest.raises(ValueError):
             qs.CH(0, 0)
-    
-    def test_CS(self):
-        qs = QuantumState(2).H([0, 1]).CS(0, 1)
-        expected_state = 0.5 * np.array([1, 1, 1, 1j])
-        assert np.allclose(qs.state, expected_state, atol=1e-3)
-    
-    def test_CS_invalid(self):
-        qs = QuantumState(2)
-        with pytest.raises(ValueError):
-            qs.CS(2, 1)
-        with pytest.raises(ValueError):
-            qs.CS(0, 2)
-        with pytest.raises(TypeError):
-            qs.CS([0, 1], 2)
-        with pytest.raises(TypeError):
-            qs.CS("invalid", 1)
-        with pytest.raises(ValueError):
-            qs.CS(0, -1)
-        with pytest.raises(ValueError):
-            qs.CS(0, 0)
-        
-    def test_CSdag(self):
-        qs = QuantumState(2).H([0, 1]).CSdag(0, 1)
-        expected_state = 0.5 * np.array([1, 1, 1, -1j])
-        assert np.allclose(qs.state, expected_state, atol=1e-3)
-    
-    def test_CSdag_invalid(self):
-        qs = QuantumState(2)
-        with pytest.raises(ValueError):
-            qs.CSdag(2, 1)
-        with pytest.raises(ValueError):
-            qs.CSdag(0, 2)
-        with pytest.raises(TypeError):
-            qs.CSdag([0, 1], 2)
-        with pytest.raises(TypeError):
-            qs.CSdag("invalid", 1)
-        with pytest.raises(ValueError):
-            qs.CSdag(0, -1)
-        with pytest.raises(ValueError):
-            qs.CSdag(0, 0)
     
     def test_CSX(self):
         qs = QuantumState(2).H(0).CSX(0, 1)
@@ -822,3 +782,26 @@ class TestQuantumState:
         assert len(probs) == 4
         assert np.isclose(np.sum(probs), 1.0)
         assert np.allclose(probs, [0.5, 0.5, 0, 0])
+    
+    def test_read_tape(self):
+        qs = QuantumState(2, qasm_tape=True).H(0).CNOT(0, 1).T(1).H([0, 1]).Sdag(0).Y(1).measure_all()
+        tape = qs.read_tape()
+        assert isinstance(tape, str)
+
+        expected_tape = [
+            'include "qelib1.inc";',
+            'qreg q[2];',
+            'creg c[2];',
+            'h q[0];',
+            'cx q[0], q[1];',
+            't q[1];',
+            'h q[0];',
+            'h q[1];',
+            'sdg q[0];',
+            'y q[1];',
+            'measure q[0] -> c[0];',
+            'measure q[1] -> c[1];'
+        ]
+        expected_tape = '\n'.join(expected_tape)
+        assert tape.strip() == expected_tape.strip()
+

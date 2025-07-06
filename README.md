@@ -75,8 +75,6 @@ qs.CZ(0, 2)
 qs.CY(0, 1)
 qs.CX(0, 2)
 qs.CH(2, 1)
-qs.CS(0, 1)
-qs.CSdag(1, 2)
 qs.CSX(0, 1)
 qs.DCX(0, 1)
 ```
@@ -121,15 +119,28 @@ Both collapse the state and return a new `QuantumState` consistent with the resu
 
 ---
 
+### QASM Translation
+
+You can translate the built circuit into QASM by setting the `qasm_tape=True` in the constructor.
+This allows the `read_tape()` function to be used, which will return a string containing QASM code for your circuit.
+
+```python
+qs = QuantumState(2, qasm_tape=True)
+qasm_code = qs.read_tape()
+```
+
+---
+
 ## Features to Be Added
 
 * **More Gates** 
     - CSXdag
+    - CS
+    - CSdag
     - CT
     - CTdag
     - RC3X
     - CSWAP
-* **QASM Translation**
 * **Circuit Visualiser**
 
 ---

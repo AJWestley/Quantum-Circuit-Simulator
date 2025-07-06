@@ -2,7 +2,7 @@ import numpy as np
 from QCircuit.gates import *
 
 class QuantumState:
-    def __init__(self, state: np.ndarray | int = None):
+    def __init__(self, state: np.ndarray | int = None, *, qasm_tape: bool | list[str] = False):
         '''Initializes a quantum state.
         Parameters:
         state (np.ndarray | int): The initial quantum state as a numpy array or the number of qubits to initialize.
@@ -24,6 +24,14 @@ class QuantumState:
             state = initialize_state(state)
         self.num_qubits = get_num_qubits(state)
         self.state = state
+
+        self.tape = None
+        if isinstance(qasm_tape, list):
+            if not all(isinstance(line, str) for line in qasm_tape):
+                raise TypeError("QASM tape must be a list of strings.")
+            self.tape = qasm_tape
+        elif qasm_tape:
+            self.tape = ['include "qelib1.inc";', f'qreg q[{self.num_qubits}];', f'creg c[{self.num_qubits}];']
         
     def __str__(self):
         return f"QuantumState({self.state})"
@@ -76,6 +84,17 @@ class QuantumState:
             raise IndexError("Index out of range for quantum state.")
         self.state[index] = value
     
+    def read_tape(self) -> str:
+        '''
+        Returns the QASM tape as a string.
+        
+        Returns:
+        str: The QASM tape as a single string with newline characters.
+        '''
+        if self.tape is None:
+            return ""
+        return '\n'.join(self.tape)
+    
     def get_probabilities(self) -> np.ndarray:
         '''
         Returns the probabilities of measuring each basis state.
@@ -85,7 +104,7 @@ class QuantumState:
         '''
         return np.abs(self.state).astype(float) ** 2
     
-    def U(self, gate: np.ndarray, qubit: int = 0) -> 'QuantumState':
+    def U(self, gate: np.ndarray, qubit: int = 0, *, internal: bool = False) -> 'QuantumState':
         '''
         Applies a quantum gate to the quantum state.
 
@@ -96,6 +115,9 @@ class QuantumState:
         Returns:
         QuantumState: A new quantum state after applying the gate.
         '''
+
+        if self.tape is not None and not internal:
+            raise RuntimeError("Custom Unary gates not supported when a QASM tape is being used.")
 
         k = int(np.log2(gate.shape[0]))
         end = qubit + k
@@ -139,7 +161,7 @@ class QuantumState:
 
         # Apply to state
         new_state = full_gate @ self.state
-        return QuantumState(new_state)
+        return QuantumState(new_state, qasm_tape=self.tape)
         
     def X(self, qubits: int | list[int] | range):
         '''
@@ -154,7 +176,13 @@ class QuantumState:
         '''
         
         gate = X_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'x q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def Y(self, qubits: int | list[int] | range):
         '''
@@ -169,7 +197,13 @@ class QuantumState:
         '''
 
         gate = Y_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'y q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def Z(self, qubits: int | list[int] | range):
         '''
@@ -184,7 +218,13 @@ class QuantumState:
         '''
         
         gate = Z_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'z q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def H(self, qubits: int | list[int] | range):
         '''
@@ -199,7 +239,13 @@ class QuantumState:
         '''
 
         gate = H_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'h q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def S(self, qubits: int | list[int] | range):
         '''
@@ -214,7 +260,13 @@ class QuantumState:
         '''
         
         gate = S_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f's q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def T(self, qubits: int | list[int] | range):
         '''
@@ -229,7 +281,13 @@ class QuantumState:
         '''
         
         gate = T_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f't q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def Sdag(self, qubits: int | list[int] | range):
         '''
@@ -244,7 +302,13 @@ class QuantumState:
         '''
         
         gate = S_dagger_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'sdg q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def Tdag(self, qubits: int | list[int] | range):
         '''
@@ -259,7 +323,13 @@ class QuantumState:
         '''
         
         gate = T_dagger_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'tdg q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def SX(self, qubits: int | list[int] | range):
         '''
@@ -274,7 +344,13 @@ class QuantumState:
         '''
         
         gate = SX_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'sx q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def SXdag(self, qubits: int | list[int] | range):
         '''
@@ -289,7 +365,13 @@ class QuantumState:
         '''
         
         gate = SX_dagger_gate(self.num_qubits, qubits)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'sxdg q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def CNOT(self, control_qubit: int, target_qubit: int):
         '''
@@ -301,7 +383,11 @@ class QuantumState:
         '''
         
         gate = CNOT_gate(self.num_qubits, control_qubit, target_qubit)
-        return self.U(gate)
+
+        if self.tape is not None:
+            self.tape.append(f'cx q[{control_qubit}], q[{target_qubit}];')
+
+        return self.U(gate, internal=True)
     
     def CCX(self, control1: int, control2: int, target: int):
         '''
@@ -336,7 +422,13 @@ class QuantumState:
         '''
         
         gate = phase_gate(self.num_qubits, qubits, phase)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'p({phase}) q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def RX(self, qubits: int | list[int] | range, theta: float):
         '''
@@ -352,7 +444,13 @@ class QuantumState:
         '''
         
         gate = RX_gate(self.num_qubits, qubits, theta)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'rx({theta}) q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def RY(self, qubits: int | list[int] | range, theta: float):
         '''
@@ -368,7 +466,13 @@ class QuantumState:
         '''
         
         gate = RY_gate(self.num_qubits, qubits, theta)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'ry({theta}) q[{qubit}];')
+
+        return self.U(gate, internal=True)
     
     def RZ(self, qubits: int | list[int] | range, theta: float):
         '''
@@ -384,7 +488,13 @@ class QuantumState:
         '''
         
         gate = RZ_gate(self.num_qubits, qubits, theta)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'rz({theta}) q[{qubit}];')    
+
+        return self.U(gate, internal=True)
     
     def RXX(self, qubit1: int, qubit2: int, theta: float):
         '''
@@ -398,6 +508,7 @@ class QuantumState:
         Returns:
         QuantumState: The new quantum state after applying the RXX gate.
         '''
+
         qlist = [qubit1, qubit2]
         return self.H(qlist).CNOT(qubit1, qubit2)\
             .RZ(qubit2, theta).CNOT(qubit1, qubit2).H(qlist)
@@ -459,8 +570,7 @@ class QuantumState:
         QuantumState: The new quantum state after applying the CZ gate.
         '''
         
-        gate = CZ_gate(self.num_qubits, control_qubit, target_qubit)
-        return self.U(gate)
+        return self.H(target_qubit).CNOT(control_qubit, target_qubit).H(target_qubit)
     
     def CY(self, control_qubit: int, target_qubit: int):
         '''
@@ -475,7 +585,11 @@ class QuantumState:
         '''
         
         gate = CY_gate(self.num_qubits, control_qubit, target_qubit)
-        return self.U(gate)
+
+        if self.tape is not None:
+            self.tape.append(f'cy q[{control_qubit}], q[{target_qubit}];')
+
+        return self.U(gate, internal=True)
     
     def CX(self, control_qubit: int, target_qubit: int):
         '''
@@ -504,37 +618,11 @@ class QuantumState:
         '''
         
         gate = CH_gate(self.num_qubits, control_qubit, target_qubit)
-        return self.U(gate)
-    
-    def CS(self, control_qubit: int, target_qubit: int):
-        '''
-        Applies the Controlled-S (CS) gate with a control qubit and a target qubit.
-        
-        Parameters:
-        control_qubit (int): The index of the control qubit.
-        target_qubit (int): The index of the target qubit.
-        
-        Returns:
-        QuantumState: The new quantum state after applying the CS gate.
-        '''
-        
-        gate = CS_gate(self.num_qubits, control_qubit, target_qubit)
-        return self.U(gate)
-    
-    def CSdag(self, control_qubit: int, target_qubit: int):
-        '''
-        Applies the Controlled-S-dagger (CS-dagger) gate with a control qubit and a target qubit.
-        
-        Parameters:
-        control_qubit (int): The index of the control qubit.
-        target_qubit (int): The index of the target qubit.
-        
-        Returns:
-        QuantumState: The new quantum state after applying the CS-dagger gate.
-        '''
-        
-        gate = CS_dagger_gate(self.num_qubits, control_qubit, target_qubit)
-        return self.U(gate)
+
+        if self.tape is not None:
+            self.tape.append(f'ch q[{control_qubit}], q[{target_qubit}];')
+
+        return self.U(gate, internal=True)
     
     def CSX(self, control_qubit: int, target_qubit: int):
         '''
@@ -549,7 +637,11 @@ class QuantumState:
         '''
         
         gate = CSX_gate(self.num_qubits, control_qubit, target_qubit)
-        return self.U(gate)
+
+        if self.tape is not None:
+            self.tape.append(f'csx q[{control_qubit}], q[{target_qubit}];')
+
+        return self.U(gate, internal=True)
     
     def CRX(self, control_qubit: int, target_qubit: int, theta: float):
         '''
@@ -565,7 +657,11 @@ class QuantumState:
         '''
         
         gate = CRX_gate(self.num_qubits, control_qubit, target_qubit, theta)
-        return self.U(gate)
+
+        if self.tape is not None:
+            self.tape.append(f'crx({theta}) q[{control_qubit}], q[{target_qubit}];')
+
+        return self.U(gate, internal=True)
     
     def CRY(self, control_qubit: int, target_qubit: int, theta: float):
         '''
@@ -581,7 +677,13 @@ class QuantumState:
         '''
         
         gate = CRY_gate(self.num_qubits, control_qubit, target_qubit, theta)
-        return self.U(gate)
+
+        if self.tape is not None:
+            qubits = qubits if not isinstance(qubits, int) else [qubits]
+            for qubit in qubits:
+                self.tape.append(f'cry({theta}) q[{control_qubit}], q[{target_qubit}];')
+
+        return self.U(gate, internal=True)
     
     def CRZ(self, control_qubit: int, target_qubit: int, theta: float):
         '''
@@ -597,7 +699,11 @@ class QuantumState:
         '''
         
         gate = CRZ_gate(self.num_qubits, control_qubit, target_qubit, theta)
-        return self.U(gate)
+
+        if self.tape is not None:
+            self.tape.append(f'crz({theta}) q[{control_qubit}], q[{target_qubit}];')
+
+        return self.U(gate, internal=True)
     
     def DCX(self, qubit1: int, qubit2: int):
         '''
@@ -685,7 +791,10 @@ class QuantumState:
             raise ValueError("Collapse resulted in zero state.")
         state /= norm
 
-        return QuantumState(state)
+        if self.tape is not None:
+            self.tape.append(f'measure q[{qubit}] -> c[{qubit}];')
+
+        return QuantumState(state, qasm_tape=self.tape)
     
     def measure_all(self, register: list = None) -> 'QuantumState':
         '''
@@ -719,8 +828,12 @@ class QuantumState:
             if not isinstance(register, list):
                 raise TypeError("Register must be a list to store measurement results.")
             register.extend(reversed(bits))  # reverse to match qubit ordering (0 = rightmost)
+        
+        if self.tape is not None:
+            for i in range(n):
+                self.tape.append(f'measure q[{i}] -> c[{i}];')
 
-        return QuantumState(new_state)
+        return QuantumState(new_state, qasm_tape=self.tape)
     
 
 def initialize_state(num_qubits: int) -> np.ndarray:
