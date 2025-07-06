@@ -74,6 +74,7 @@ qs.SWAP(1, 2)
 qs.CZ(0, 2)
 qs.CY(0, 1)
 qs.CX(0, 2)
+qs.CH(2, 1)
 ```
 
 #### Controlled Rotations
@@ -87,13 +88,28 @@ qs.CRZ(0, 1, theta=np.pi/2)
 #### Multi-Qubit Gates
 
 ```python
-qs.TOFFOLI(0, 1, 2) # controls = 0 and 1, target = 2
+# Toffoli and Approximate Toffoli
+qs.CCX(0, 1, 2) # controls = 0 and 1, target = 2
+qs.RCCX(0, 1, 2)
+
+# Rotations
+qs.RXX(0, 1, pi / 2) # qubits = 0 and 1, theta = pi / 2
+qs.RYY(0, 1, pi / 2)
+qs.RZZ(0, 1, pi / 2)
 ```
 
 #### Unary Gates
 
 ```python
 qs.U(np.array([[1, 1], [1, -1]]), 1)
+```
+
+#### Classical Gates
+```python
+qs.AND(0, 1, 2) # inputs = 0 and 1, output = 2
+qs.OR(0, 1, 2)
+qs.XOR(0, 1, 2)
+qs.NOT(0)
 ```
 
 ---
@@ -112,9 +128,11 @@ Both collapse the state and return a new `QuantumState` consistent with the resu
 ## Features to Be Added
 
 * **More Gates** 
-    - RXX
-    - RZZ
-    - RCCX
+    - CS
+    - CSdag
+    - CT
+    - CTdag
+    - DCX
     - RC3X
 * **QASM Translation**
 * **Circuit Visualiser**

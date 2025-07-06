@@ -303,7 +303,7 @@ class QuantumState:
         gate = CNOT_gate(self.num_qubits, control_qubit, target_qubit)
         return self.U(gate)
     
-    def TOFFOLI(self, control1: int, control2: int, target: int):
+    def CCX(self, control1: int, control2: int, target: int):
         '''
         Applies the TOFFOLI gate (CCNOT) with two control qubits and one target qubit.
         
@@ -313,7 +313,7 @@ class QuantumState:
         target (int): The index of the target qubit.
         
         Returns:
-        QuantumState: The new quantum state after applying the TOFFOLI gate.
+        QuantumState: The new quantum state after applying the CCX gate.
         '''
         
         return self.H(target).CNOT(control2, target)\
@@ -386,6 +386,53 @@ class QuantumState:
         gate = RZ_gate(self.num_qubits, qubits, theta)
         return self.U(gate)
     
+    def RXX(self, qubit1: int, qubit2: int, theta: float):
+        '''
+        Applies the RXX gate to two specific qubits.
+        
+        Parameters:
+        qubit1 (int): The index of the first qubit.
+        qubit2 (int): The index of the second qubit.
+        theta (float): The rotation angle in radians.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the RXX gate.
+        '''
+        
+        return self.RX([qubit1, qubit2], np.pi/2).CNOT(qubit1, qubit2)\
+            .RZ(qubit2, theta).CNOT(qubit1, qubit2).RX([qubit1, qubit2], -np.pi/2)
+    
+    def RYY(self, qubit1: int, qubit2: int, theta: float):
+        '''
+        Applies the RYY gate to two specific qubits.
+        
+        Parameters:
+        qubit1 (int): The index of the first qubit.
+        qubit2 (int): The index of the second qubit.
+        theta (float): The rotation angle in radians.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the RYY gate.
+        '''
+        
+        return self.RY([qubit1, qubit2], np.pi/2).CNOT(qubit1, qubit2)\
+            .RZ(qubit2, theta).CNOT(qubit1, qubit2).RY([qubit1, qubit2], -np.pi/2)
+    
+    def RZZ(self, qubit1: int, qubit2: int, theta: float):
+        '''
+        Applies the RZZ gate to two specific qubits.
+        
+        Parameters:
+        qubit1 (int): The index of the first qubit.
+        qubit2 (int): The index of the second qubit.
+        theta (float): The rotation angle in radians.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the RZZ gate.
+        '''
+        
+        return self.CNOT(qubit1, qubit2).RZ(qubit2, theta).CNOT(qubit1, qubit2)
+    
     def SWAP(self, qubit1: int, qubit2: int):
         '''
         Applies the SWAP gate to two specific qubits.
@@ -447,6 +494,21 @@ class QuantumState:
         
         return self.CNOT(control_qubit, target_qubit)
     
+    def CH(self, control_qubit: int, target_qubit: int):
+        '''
+        Applies the Controlled-Hadamard (CH) gate with a control qubit and a target qubit.
+        
+        Parameters:
+        control_qubit (int): The index of the control qubit.
+        target_qubit (int): The index of the target qubit.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the CH gate.
+        '''
+        
+        gate = CH_gate(self.num_qubits, control_qubit, target_qubit)
+        return self.U(gate)
+    
     def CRX(self, control_qubit: int, target_qubit: int, theta: float):
         '''
         Applies the Controlled-RX gate with a control qubit and a target qubit.
@@ -494,6 +556,23 @@ class QuantumState:
         
         gate = CRZ_gate(self.num_qubits, control_qubit, target_qubit, theta)
         return self.U(gate)
+    
+    def RCCX(self, control1: int, control2: int, target: int):
+        '''
+        Applies the Controlled-Controlled-X (CCX) gate (Toffoli gate) with two control qubits and one target qubit.
+        
+        Parameters:
+        control1 (int): The index of the first control qubit.
+        control2 (int): The index of the second control qubit.
+        target (int): The index of the target qubit.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the CCX gate.
+        '''
+        
+        return self.H(target).Tdag(target).CX(control2, target)\
+            .T(target).CX(control1, target).Tdag(target).CX(control2, target)\
+            .T(target).CX(control1, target).H(target)
     
     def measure(self, qubit: int, register: list = None) -> 'QuantumState':
         '''

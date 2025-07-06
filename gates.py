@@ -585,6 +585,44 @@ def CY_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
 
     return term0 + term1
 
+def CH_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
+    """
+    Creates a Controlled-Hadamard (CH) gate for a specific control and target qubit in an n-qubit system.
+    
+    Parameters:
+    n_qubits (int): Total number of qubits in the system.
+    control (int): The index of the control qubit.
+    target (int): The index of the target qubit.
+    
+    Returns:
+    np.ndarray: The full unitary matrix representing the CH gate applied to the specified qubits.
+    """
+
+    P0 = np.array([[1, 0], [0, 0]], dtype=complex)
+    P1 = np.array([[0, 0], [0, 1]], dtype=complex)
+
+    # Projector for control = 0 → identity
+    ops0 = []
+    for i in reversed(range(n_qubits)):
+        if i == control:
+            ops0.append(P0)
+        else:
+            ops0.append(Gates.Identity)
+    term0 = kron_op(ops0)
+
+    # Projector for control = 1 → apply H to target
+    ops1 = []
+    for i in reversed(range(n_qubits)):
+        if i == control:
+            ops1.append(P1)
+        elif i == target:
+            ops1.append(Gates.Hadamard)
+        else:
+            ops1.append(Gates.Identity)
+    term1 = kron_op(ops1)
+
+    return term0 + term1
+
 def CRX_gate(n_qubits: int, control: int, target: int, theta: float) -> np.ndarray:
     """
     Creates a Controlled-RX gate for a specific control and target qubit in an n-qubit system.
