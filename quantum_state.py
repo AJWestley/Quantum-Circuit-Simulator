@@ -261,6 +261,36 @@ class QuantumState:
         gate = T_dagger_gate(self.num_qubits, qubits)
         return self.U(gate)
     
+    def SX(self, qubits: int | list[int] | range):
+        '''
+        Applies the Square Root of X gate (SX) to a specific qubit.
+        
+        Parameters:
+        qubits (int | list[int] | range): The index or indices of the qubit(s) to apply the gate to.
+        If a range is provided, applies the gate to all qubits in that range.
+
+        Returns:
+        QuantumState: The new quantum state after applying the SX gate.
+        '''
+        
+        gate = SX_gate(self.num_qubits, qubits)
+        return self.U(gate)
+    
+    def SXdag(self, qubits: int | list[int] | range):
+        '''
+        Applies the Square Root of X-dagger gate (SX-dagger) to a specific qubit.
+        
+        Parameters:
+        qubits (int | list[int] | range): The index or indices of the qubit(s) to apply the gate to.
+        If a range is provided, applies the gate to all qubits in that range.
+
+        Returns:
+        QuantumState: The new quantum state after applying the SX-dagger gate.
+        '''
+        
+        gate = SX_dagger_gate(self.num_qubits, qubits)
+        return self.U(gate)
+    
     def CNOT(self, control_qubit: int, target_qubit: int):
         '''
         Applies the CNOT gate with a control qubit and a target qubit.
@@ -272,6 +302,25 @@ class QuantumState:
         
         gate = CNOT_gate(self.num_qubits, control_qubit, target_qubit)
         return self.U(gate)
+    
+    def TOFFOLI(self, control1: int, control2: int, target: int):
+        '''
+        Applies the TOFFOLI gate (CCNOT) with two control qubits and one target qubit.
+        
+        Parameters:
+        control1 (int): The index of the first control qubit.
+        control2 (int): The index of the second control qubit.
+        target (int): The index of the target qubit.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the TOFFOLI gate.
+        '''
+        
+        return self.H(target).CNOT(control2, target)\
+            .Tdag(target).CNOT(control1, target).T(target)\
+            .CNOT(control2, target).Tdag(target).CNOT(control1, target)\
+            .T(target).T(control2).H(target).CNOT(control1, control2)\
+            .T(control1).Tdag(control2).CNOT(control1, control2)
     
     def P(self, qubits: int | list[int] | range, phase: float):
         '''

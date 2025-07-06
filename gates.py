@@ -264,6 +264,68 @@ def S_dagger_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
 
     return full_gate
 
+def SX_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
+    """
+    Creates an SX gate (square root of X) for a specific qubit, or qubit range in an n-qubit system.
+    
+    Parameters:
+    n_qubits (int): Total number of qubits in the system.
+    qubits (int | list[int] | range): The index of the qubit to apply the gate to, or a list/range of qubits.
+    
+    Returns:
+    np.ndarray: The full unitary matrix representing the SX gate applied to the specified qubit.
+    """
+    if isinstance(qubits, int):
+        qubits = [qubits]
+
+    for qubit in qubits:
+        if qubit < 0 or qubit >= n_qubits:
+            raise ValueError("Qubit index out of range.")
+
+    ops = []
+    for i in reversed(range(n_qubits)):
+        if i in qubits:
+            ops.append(Gates.SX)
+        else:
+            ops.append(Gates.Identity)
+
+    full_gate = ops[0]
+    for op in ops[1:]:
+        full_gate = np.kron(full_gate, op)
+
+    return full_gate
+
+def SX_dagger_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
+    """
+    Creates an SX-dagger gate (square root of X dagger) for a specific qubit, or qubit range in an n-qubit system.
+    
+    Parameters:
+    n_qubits (int): Total number of qubits in the system.
+    qubits (int | list[int] | range): The index of the qubit to apply the gate to, or a list/range of qubits.
+    
+    Returns:
+    np.ndarray: The full unitary matrix representing the SX-dagger gate applied to the specified qubit.
+    """
+    if isinstance(qubits, int):
+        qubits = [qubits]
+
+    for qubit in qubits:
+        if qubit < 0 or qubit >= n_qubits:
+            raise ValueError("Qubit index out of range.")
+
+    ops = []
+    for i in reversed(range(n_qubits)):
+        if i in qubits:
+            ops.append(Gates.SX.conj().T)
+        else:
+            ops.append(Gates.Identity)
+
+    full_gate = ops[0]
+    for op in ops[1:]:
+        full_gate = np.kron(full_gate, op)
+
+    return full_gate
+
 def CNOT_gate(
         n_qubits: int, 
         control: int, 

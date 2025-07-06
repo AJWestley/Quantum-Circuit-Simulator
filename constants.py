@@ -37,3 +37,8 @@ class Gates:
         [1, 0],
         [0, np.exp(1j * np.pi / 4)]
     ], dtype=complex)
+
+    SX = 0.5 * np.array([
+        [1 + 1j, 1 - 1j],
+        [1 - 1j, 1 + 1j]
+    ], dtype=complex)

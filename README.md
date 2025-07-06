@@ -53,6 +53,8 @@ qs.S(1)
 qs.T([0, 2])
 qs.Sdag(0)
 qs.Tdag(0)
+qs.SX(1)
+qs.SXdag(1)
 ```
 
 #### Parameterized Single-Qubit Rotations
@@ -82,6 +84,12 @@ qs.CRY(0, 1, theta=np.pi/2)
 qs.CRZ(0, 1, theta=np.pi/2)
 ```
 
+#### Multi-Qubit Gates
+
+```python
+qs.TOFFOLI(0, 1, 2) # controls = 0 and 1, target = 2
+```
+
 #### Unary Gates
 
 ```python
@@ -104,9 +112,10 @@ Both collapse the state and return a new `QuantumState` consistent with the resu
 ## Features to Be Added
 
 * **More Gates** 
-    - Toffoli
-    - SX
-    - SX dagger
+    - RXX
+    - RZZ
+    - RCCX
+    - RC3X
 * **QASM Translation**
 * **Circuit Visualiser**
 * **Unit Tests**
