@@ -668,6 +668,8 @@ class QuantumState:
         # Sample measurement result
         result = np.random.choice([0, 1], p=[prob_0, prob_1])
         if register is not None:
+            if not isinstance(register, list):
+                raise TypeError("Register must be a list to store measurement results.")
             register.append(result)
 
         # Collapse the state
@@ -714,6 +716,8 @@ class QuantumState:
         # Decode outcome to bitstring
         bits = [(outcome_index >> i) & 1 for i in range(n)]
         if register is not None:
+            if not isinstance(register, list):
+                raise TypeError("Register must be a list to store measurement results.")
             register.extend(reversed(bits))  # reverse to match qubit ordering (0 = rightmost)
 
         return QuantumState(new_state)

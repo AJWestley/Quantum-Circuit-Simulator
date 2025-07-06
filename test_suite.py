@@ -769,3 +769,56 @@ class TestQuantumState:
             qs.RCCX(0, -1, 2)
         with pytest.raises(ValueError):
             qs.RCCX(0, 1, 0)
+    
+    def test_measure(self):
+        register = []
+        qs = QuantumState(2).H(0).measure(0)
+        assert qs.state.shape == (4,)
+        assert np.isclose(np.sum(np.abs(qs.state)**2), 1.0)
+
+        qs = QuantumState(2).X(1).measure(0, register)
+        assert register[0] == 0
+
+        qs.measure(1, register)
+        assert register[1] == 1
+
+    def test_measure_invalid(self):
+        qs = QuantumState(2)
+        with pytest.raises(ValueError):
+            qs.measure(2)
+        with pytest.raises(TypeError):
+            qs.measure([0, 2])
+        with pytest.raises(TypeError):
+            qs.measure(range(3))
+        with pytest.raises(TypeError):
+            qs.measure("invalid")
+        with pytest.raises(ValueError):
+            qs.measure(-1)
+        with pytest.raises(TypeError):
+            qs.measure(0, register="invalid")
+    
+    def test_measure_all(self):
+        register = []
+        qs = QuantumState(2).H(0).measure_all(register)
+        assert len(register) == 2
+        assert qs.state.shape == (4,)
+        assert np.isclose(np.sum(np.abs(qs.state)**2), 1.0)
+
+        qs = QuantumState(3).X(1).measure_all(register)
+        assert len(register) == 5
+        assert qs.state.shape == (8,)
+        assert np.isclose(np.sum(np.abs(qs.state)**2), 1.0)
+    
+    def test_measure_all_invalid(self):
+        qs = QuantumState(2)
+        with pytest.raises(TypeError):
+            qs.measure_all(register="invalid")
+        with pytest.raises(TypeError):
+            qs.measure_all(register=123)
+    
+    def test_get_probabilities(self):
+        qs = QuantumState(2).H(0)
+        probs = qs.get_probabilities()
+        assert len(probs) == 4
+        assert np.isclose(np.sum(probs), 1.0)
+        assert np.allclose(probs, [0.5, 0.5, 0, 0])
