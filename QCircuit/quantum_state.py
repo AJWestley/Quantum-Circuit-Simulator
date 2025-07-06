@@ -31,7 +31,7 @@ class QuantumState:
                 raise TypeError("QASM tape must be a list of strings.")
             self.tape = qasm_tape
         elif qasm_tape:
-            self.tape = ['include "qelib1.inc";', f'qreg q[{self.num_qubits}];', f'creg c[{self.num_qubits}];']
+            self.tape = ['OPENQASM 2.0;', 'include "qelib1.inc";', f'qreg q[{self.num_qubits}];', f'creg c[{self.num_qubits}];']
         
     def __str__(self):
         return f"QuantumState({self.state})"
