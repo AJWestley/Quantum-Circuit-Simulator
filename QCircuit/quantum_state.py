@@ -506,6 +506,51 @@ class QuantumState:
         gate = CH_gate(self.num_qubits, control_qubit, target_qubit)
         return self.U(gate)
     
+    def CS(self, control_qubit: int, target_qubit: int):
+        '''
+        Applies the Controlled-S (CS) gate with a control qubit and a target qubit.
+        
+        Parameters:
+        control_qubit (int): The index of the control qubit.
+        target_qubit (int): The index of the target qubit.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the CS gate.
+        '''
+        
+        gate = CS_gate(self.num_qubits, control_qubit, target_qubit)
+        return self.U(gate)
+    
+    def CSdag(self, control_qubit: int, target_qubit: int):
+        '''
+        Applies the Controlled-S-dagger (CS-dagger) gate with a control qubit and a target qubit.
+        
+        Parameters:
+        control_qubit (int): The index of the control qubit.
+        target_qubit (int): The index of the target qubit.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the CS-dagger gate.
+        '''
+        
+        gate = CS_dagger_gate(self.num_qubits, control_qubit, target_qubit)
+        return self.U(gate)
+    
+    def CSX(self, control_qubit: int, target_qubit: int):
+        '''
+        Applies the Controlled-Square Root of X (CSX) gate with a control qubit and a target qubit.
+        
+        Parameters:
+        control_qubit (int): The index of the control qubit.
+        target_qubit (int): The index of the target qubit.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the CSX gate.
+        '''
+        
+        gate = CSX_gate(self.num_qubits, control_qubit, target_qubit)
+        return self.U(gate)
+    
     def CRX(self, control_qubit: int, target_qubit: int, theta: float):
         '''
         Applies the Controlled-RX gate with a control qubit and a target qubit.
@@ -553,6 +598,20 @@ class QuantumState:
         
         gate = CRZ_gate(self.num_qubits, control_qubit, target_qubit, theta)
         return self.U(gate)
+    
+    def DCX(self, qubit1: int, qubit2: int):
+        '''
+        Applies the Double-Controlled-X (DCX) gate with a control qubit and a target qubit.
+        
+        Parameters:
+        qubit1 (int): The index of the first control qubit.
+        qubit2 (int): The index of the second control qubit.
+        
+        Returns:
+        QuantumState: The new quantum state after applying the DCX gate.
+        '''
+
+        return self.CX(qubit1, qubit2).CX(qubit2, qubit1)
     
     def RCCX(self, control1: int, control2: int, target: int):
         '''

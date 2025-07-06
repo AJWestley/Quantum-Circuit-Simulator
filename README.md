@@ -75,6 +75,10 @@ qs.CZ(0, 2)
 qs.CY(0, 1)
 qs.CX(0, 2)
 qs.CH(2, 1)
+qs.CS(0, 1)
+qs.CSdag(1, 2)
+qs.CSX(0, 1)
+qs.DCX(0, 1)
 ```
 
 #### Controlled Rotations
@@ -104,14 +108,6 @@ qs.RZZ(0, 1, pi / 2)
 qs.U(np.array([[1, 1], [1, -1]]), 1)
 ```
 
-#### Classical Gates
-```python
-qs.AND(0, 1, 2) # inputs = 0 and 1, output = 2
-qs.OR(0, 1, 2)
-qs.XOR(0, 1, 2)
-qs.NOT(0)
-```
-
 ---
 
 ### Measurement
@@ -128,16 +124,13 @@ Both collapse the state and return a new `QuantumState` consistent with the resu
 ## Features to Be Added
 
 * **More Gates** 
-    - CS
-    - CSdag
+    - CSXdag
     - CT
     - CTdag
-    - DCX
     - RC3X
     - CSWAP
 * **QASM Translation**
 * **Circuit Visualiser**
-* **Unit Tests**
 
 ---
 

@@ -603,6 +603,66 @@ class TestQuantumState:
         with pytest.raises(ValueError):
             qs.CH(0, 0)
     
+    def test_CS(self):
+        qs = QuantumState(2).H([0, 1]).CS(0, 1)
+        expected_state = 0.5 * np.array([1, 1, 1, 1j])
+        assert np.allclose(qs.state, expected_state, atol=1e-3)
+    
+    def test_CS_invalid(self):
+        qs = QuantumState(2)
+        with pytest.raises(ValueError):
+            qs.CS(2, 1)
+        with pytest.raises(ValueError):
+            qs.CS(0, 2)
+        with pytest.raises(TypeError):
+            qs.CS([0, 1], 2)
+        with pytest.raises(TypeError):
+            qs.CS("invalid", 1)
+        with pytest.raises(ValueError):
+            qs.CS(0, -1)
+        with pytest.raises(ValueError):
+            qs.CS(0, 0)
+        
+    def test_CSdag(self):
+        qs = QuantumState(2).H([0, 1]).CSdag(0, 1)
+        expected_state = 0.5 * np.array([1, 1, 1, -1j])
+        assert np.allclose(qs.state, expected_state, atol=1e-3)
+    
+    def test_CSdag_invalid(self):
+        qs = QuantumState(2)
+        with pytest.raises(ValueError):
+            qs.CSdag(2, 1)
+        with pytest.raises(ValueError):
+            qs.CSdag(0, 2)
+        with pytest.raises(TypeError):
+            qs.CSdag([0, 1], 2)
+        with pytest.raises(TypeError):
+            qs.CSdag("invalid", 1)
+        with pytest.raises(ValueError):
+            qs.CSdag(0, -1)
+        with pytest.raises(ValueError):
+            qs.CSdag(0, 0)
+    
+    def test_CSX(self):
+        qs = QuantumState(2).H(0).CSX(0, 1)
+        expected_state = np.array([0.707, 0.354 + 0.354j, 0, 0.354 - 0.354j])
+        assert np.allclose(qs.state, expected_state, atol=1e-3)
+
+    def test_CSX_invalid(self):
+        qs = QuantumState(2)
+        with pytest.raises(ValueError):
+            qs.CSX(2, 1)
+        with pytest.raises(ValueError):
+            qs.CSX(0, 2)
+        with pytest.raises(TypeError):
+            qs.CSX([0, 1], 2)
+        with pytest.raises(TypeError):
+            qs.CSX("invalid", 1)
+        with pytest.raises(ValueError):
+            qs.CSX(0, -1)
+        with pytest.raises(ValueError):
+            qs.CSX(0, 0)
+
     def test_CRX(self):
         qs = QuantumState(2).H([0, 1]).CRX(0, 1, np.pi / 2)
         expected_state = np.array([0.5, 0.354 - 0.354j, 0.5, 0.354 - 0.354j])
@@ -668,6 +728,26 @@ class TestQuantumState:
             qs.CRZ(0, 0, np.pi / 2)
         with pytest.raises(TypeError):
             qs.CRZ(0, 1, 'invalid')
+    
+    def test_DCX(self):
+        qs = QuantumState(2).H(0).DCX(0, 1)
+        expected_state = np.array([0.707, 0, 0.707, 0])
+        assert np.allclose(qs.state, expected_state, atol=1e-3)
+
+    def test_DCX_invalid(self):
+        qs = QuantumState(2)
+        with pytest.raises(ValueError):
+            qs.DCX(2, 1)
+        with pytest.raises(ValueError):
+            qs.DCX(0, 2)
+        with pytest.raises(TypeError):
+            qs.DCX([0, 1], 2)
+        with pytest.raises(TypeError):
+            qs.DCX("invalid", 1)
+        with pytest.raises(ValueError):
+            qs.DCX(0, -1)
+        with pytest.raises(ValueError):
+            qs.DCX(0, 0)
     
     def test_RCCX(self):
         qs = QuantumState(3).H([0, 1]).RCCX(0, 1, 2)

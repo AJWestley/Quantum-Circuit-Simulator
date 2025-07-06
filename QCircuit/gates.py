@@ -605,6 +605,123 @@ def CH_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
 
     return term0 + term1
 
+def CS_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
+    """
+    Creates a Controlled-S (CS) gate for a specific control and target qubit in an n-qubit system.
+    
+    Parameters:
+    n_qubits (int): Total number of qubits in the system.
+    control (int): The index of the control qubit.
+    target (int): The index of the target qubit.
+    
+    Returns:
+    np.ndarray: The full unitary matrix representing the CS gate applied to the specified qubits.
+    """
+    validate_params(n_qubits, [control, target])
+
+    P0 = np.array([[1, 0], [0, 0]], dtype=complex)
+    P1 = np.array([[0, 0], [0, 1]], dtype=complex)
+
+    # Projector for control = 0 → identity
+    ops0 = []
+    for i in reversed(range(n_qubits)):
+        if i == control:
+            ops0.append(P0)
+        else:
+            ops0.append(Gates.Identity)
+    term0 = kron_op(ops0)
+
+    # Projector for control = 1 → apply S to target
+    ops1 = []
+    for i in reversed(range(n_qubits)):
+        if i == control:
+            ops1.append(P1)
+        elif i == target:
+            ops1.append(Gates.S)
+        else:
+            ops1.append(Gates.Identity)
+    term1 = kron_op(ops1)
+
+    return term0 + term1
+
+def CS_dagger_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
+    """
+    Creates a Controlled-S-dagger (CS-dagger) gate for a specific control and target qubit in an n-qubit system.
+    
+    Parameters:
+    n_qubits (int): Total number of qubits in the system.
+    control (int): The index of the control qubit.
+    target (int): The index of the target qubit.
+    
+    Returns:
+    np.ndarray: The full unitary matrix representing the CS-dagger gate applied to the specified qubits.
+    """
+    validate_params(n_qubits, [control, target])
+
+    P0 = np.array([[1, 0], [0, 0]], dtype=complex)
+    P1 = np.array([[0, 0], [0, 1]], dtype=complex)
+
+    # Projector for control = 0 → identity
+    ops0 = []
+    for i in reversed(range(n_qubits)):
+        if i == control:
+            ops0.append(P0)
+        else:
+            ops0.append(Gates.Identity)
+    term0 = kron_op(ops0)
+
+    # Projector for control = 1 → apply S-dagger to target
+    ops1 = []
+    for i in reversed(range(n_qubits)):
+        if i == control:
+            ops1.append(P1)
+        elif i == target:
+            ops1.append(Gates.S.conj().T)
+        else:
+            ops1.append(Gates.Identity)
+    term1 = kron_op(ops1)
+
+    return term0 + term1
+
+def CSX_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
+    """
+    Creates a Controlled-SX (CSX) gate for a specific control and target qubit in an n-qubit system.
+    
+    Parameters:
+    n_qubits (int): Total number of qubits in the system.
+    control (int): The index of the control qubit.
+    target (int): The index of the target qubit.
+    
+    Returns:
+    np.ndarray: The full unitary matrix representing the CSX gate applied to the specified qubits.
+    """
+    validate_params(n_qubits, [control, target])
+
+    P0 = np.array([[1, 0], [0, 0]], dtype=complex)
+    P1 = np.array([[0, 0], [0, 1]], dtype=complex)
+
+    # Projector for control = 0 → identity
+    ops0 = []
+    for i in reversed(range(n_qubits)):
+        if i == control:
+            ops0.append(P0)
+        else:
+            ops0.append(Gates.Identity)
+    term0 = kron_op(ops0)
+
+    # Projector for control = 1 → apply SX to target
+    ops1 = []
+    for i in reversed(range(n_qubits)):
+        if i == control:
+            ops1.append(P1)
+        elif i == target:
+            ops1.append(Gates.SX)
+        else:
+            ops1.append(Gates.Identity)
+    term1 = kron_op(ops1)
+
+    return term0 + term1
+
 def CRX_gate(n_qubits: int, control: int, target: int, theta: float) -> np.ndarray:
     """
     Creates a Controlled-RX gate for a specific control and target qubit in an n-qubit system.
