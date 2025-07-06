@@ -1,5 +1,5 @@
 import numpy as np
-from constants import Gates
+from QCircuit.constants import Gates
 
 def X_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     """
@@ -12,12 +12,10 @@ def X_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the X gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -43,12 +41,10 @@ def Y_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the Y gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+    
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -74,12 +70,10 @@ def Z_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the Z gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+    
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -105,12 +99,10 @@ def H_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the Hadamard gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+    
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -136,12 +128,10 @@ def S_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the S gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -167,12 +157,10 @@ def T_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the T gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -199,7 +187,7 @@ def I_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the Identity gate applied to the specified qubit.
     """
-    
+    validate_params(n_qubits, qubits)
     return np.eye(2 ** n_qubits, dtype=complex)
 
 def T_dagger_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
@@ -213,12 +201,10 @@ def T_dagger_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the T-dagger gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -244,12 +230,10 @@ def S_dagger_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the S-dagger gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -275,12 +259,10 @@ def SX_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the SX gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -306,12 +288,10 @@ def SX_dagger_gate(n_qubits: int, qubits: int | list[int] | range) -> np.ndarray
     Returns:
     np.ndarray: The full unitary matrix representing the SX-dagger gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits)
+
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -342,6 +322,7 @@ def CNOT_gate(
     Returns:
     np.ndarray: The full unitary matrix representing the CNOT gate applied to the specified qubits.
     """
+    validate_params(n_qubits, [control, target])
 
     P0 = np.array([[1, 0], [0, 0]], dtype=complex)
     P1 = np.array([[0, 0], [0, 1]], dtype=complex)
@@ -380,15 +361,12 @@ def phase_gate(n_qubits: int, qubits: int | list[int] | range, phase: float) -> 
     Returns:
     np.ndarray: The full unitary matrix representing the phase gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits, theta=phase)
     
     P = np.array([[1, 0], [0, np.exp(1j * phase)]], dtype=complex)
     
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -415,16 +393,13 @@ def RX_gate(n_qubits: int, qubits: int | list[int] | range, theta: float) -> np.
     Returns:
     np.ndarray: The full unitary matrix representing the RX gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits, theta=theta)
    
     RX = np.array([[np.cos(theta / 2), -1j * np.sin(theta / 2)],
                           [-1j * np.sin(theta / 2), np.cos(theta / 2)]], dtype=complex)
     
     if isinstance(qubits, int):
         qubits = [qubits]
-
-    for qubit in qubits:
-        if qubit < 0 or qubit >= n_qubits:
-            raise ValueError("Qubit index out of range.")
 
     ops = []
     for i in reversed(range(n_qubits)):
@@ -451,6 +426,7 @@ def RY_gate(n_qubits: int, qubits: int | list[int] | range, theta: float) -> np.
     Returns:
     np.ndarray: The full unitary matrix representing the RY gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits, theta=theta)
     
     RY = np.array([[np.cos(theta / 2), -np.sin(theta / 2)],
                           [np.sin(theta / 2), np.cos(theta / 2)]], dtype=complex)
@@ -487,6 +463,7 @@ def RZ_gate(n_qubits: int, qubits: int | list[int] | range, theta: float) -> np.
     Returns:
     np.ndarray: The full unitary matrix representing the RZ gate applied to the specified qubit.
     """
+    validate_params(n_qubits, qubits, theta=theta)
    
     RZ = np.array([[np.exp(-1j * theta / 2), 0],
                           [0, np.exp(1j * theta / 2)]], dtype=complex)
@@ -523,6 +500,8 @@ def CZ_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the CZ gate applied to the specified qubits.
     """
+    validate_params(n_qubits, [control, target])
+
     P0 = np.array([[1, 0], [0, 0]], dtype=complex)
     P1 = np.array([[0, 0], [0, 1]], dtype=complex)
 
@@ -560,6 +539,8 @@ def CY_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the CY gate applied to the specified qubits.
     """
+    validate_params(n_qubits, [control, target])
+
     P0 = np.array([[1, 0], [0, 0]], dtype=complex)
     P1 = np.array([[0, 0], [0, 1]], dtype=complex)
 
@@ -597,6 +578,7 @@ def CH_gate(n_qubits: int, control: int, target: int) -> np.ndarray:
     Returns:
     np.ndarray: The full unitary matrix representing the CH gate applied to the specified qubits.
     """
+    validate_params(n_qubits, [control, target])
 
     P0 = np.array([[1, 0], [0, 0]], dtype=complex)
     P1 = np.array([[0, 0], [0, 1]], dtype=complex)
@@ -636,6 +618,7 @@ def CRX_gate(n_qubits: int, control: int, target: int, theta: float) -> np.ndarr
     Returns:
     np.ndarray: The full unitary matrix representing the CRX gate applied to the specified qubits.
     """
+    validate_params(n_qubits, [control, target], theta=theta)
     
     RX = np.array([[np.cos(theta / 2), -1j * np.sin(theta / 2)],
                           [-1j * np.sin(theta / 2), np.cos(theta / 2)]], dtype=complex)
@@ -677,6 +660,7 @@ def CRY_gate(n_qubits: int, control: int, target: int, theta: float) -> np.ndarr
     Returns:
     np.ndarray: The full unitary matrix representing the CRY gate applied to the specified qubits.
     """
+    validate_params(n_qubits, [control, target], theta=theta)
     
     RY = np.array([[np.cos(theta / 2), -np.sin(theta / 2)],
                           [np.sin(theta / 2), np.cos(theta / 2)]], dtype=complex)
@@ -718,6 +702,7 @@ def CRZ_gate(n_qubits: int, control: int, target: int, theta: float) -> np.ndarr
     Returns:
     np.ndarray: The full unitary matrix representing the CRZ gate applied to the specified qubits.
     """
+    validate_params(n_qubits, [control, target], theta=theta)
     
     RZ = np.array([[np.exp(-1j * theta / 2), 0],
                           [0, np.exp(1j * theta / 2)]], dtype=complex)
@@ -768,6 +753,48 @@ def U_gate(n_qubits: int, qubit: int, matrix: np.ndarray) -> np.ndarray:
     full_gate[2 ** qubit:2 ** (qubit + 1), 2 ** qubit:2 ** (qubit + 1)] = matrix
     
     return full_gate.reshape((2 ** n_qubits, 2 ** n_qubits))
+
+def validate_params(
+        n_qubits: int, 
+        qubits: int | list[int] | range = None,
+        theta: float = None,
+        ):
+    """
+    Validates the parameters for qubit operations.
+    
+    Parameters:
+    n_qubits (int): Total number of qubits in the system.
+    qubits (int | list[int] | range): The index of the qubit(s) to apply the gate to.
+    
+    Raises:
+    ValueError: If any qubit index is out of range.
+    TypeError: If qubits is not an int, list, or range.
+    """
+    if not isinstance(n_qubits, int) or n_qubits <= 0:
+        raise ValueError("n_qubits must be a positive integer.")
+
+    if theta is not None:
+        if not isinstance(theta, (int, float)):
+            raise TypeError("theta must be a number.")
+
+    if qubits is not None:
+        if not isinstance(qubits, (int, list, range)):
+            raise TypeError("qubits must be an int, list of ints, or range.")
+        
+        if isinstance(qubits, int) :
+            if qubits < 0 or qubits >= n_qubits:
+                raise ValueError("Qubit index out of range.")
+            return
+        
+        if isinstance(qubits, list):
+            if len(set(qubits)) != len(qubits):
+                raise ValueError("Qubit indices must be unique.")
+        
+        for qubit in qubits:
+            if not isinstance(qubit, int):
+                raise TypeError("All qubit indices must be integers.")
+            if qubit < 0 or qubit >= n_qubits:
+                raise ValueError("Qubit index out of range.")
 
 def validate_gate(gate: np.ndarray, num_qubits: int):
     """

@@ -1,5 +1,5 @@
 import numpy as np
-from gates import *
+from QCircuit.gates import *
 
 class QuantumState:
     def __init__(self, state: np.ndarray | int = None):
@@ -398,9 +398,9 @@ class QuantumState:
         Returns:
         QuantumState: The new quantum state after applying the RXX gate.
         '''
-        
-        return self.RX([qubit1, qubit2], np.pi/2).CNOT(qubit1, qubit2)\
-            .RZ(qubit2, theta).CNOT(qubit1, qubit2).RX([qubit1, qubit2], -np.pi/2)
+        qlist = [qubit1, qubit2]
+        return self.H(qlist).CNOT(qubit1, qubit2)\
+            .RZ(qubit2, theta).CNOT(qubit1, qubit2).H(qlist)
     
     def RYY(self, qubit1: int, qubit2: int, theta: float):
         '''
@@ -414,9 +414,9 @@ class QuantumState:
         Returns:
         QuantumState: The new quantum state after applying the RYY gate.
         '''
-        
-        return self.RY([qubit1, qubit2], np.pi/2).CNOT(qubit1, qubit2)\
-            .RZ(qubit2, theta).CNOT(qubit1, qubit2).RY([qubit1, qubit2], -np.pi/2)
+        qlist = [qubit1, qubit2]
+        return self.Sdag(qlist).H(qlist).CNOT(qubit1, qubit2)\
+            .RZ(qubit2, theta).CNOT(qubit1, qubit2).H(qlist).S(qlist)
     
     def RZZ(self, qubit1: int, qubit2: int, theta: float):
         '''
@@ -444,9 +444,6 @@ class QuantumState:
         Returns:
         QuantumState: The new quantum state after applying the SWAP gate.
         '''
-        
-        if qubit1 < 0 or qubit1 >= self.num_qubits or qubit2 < 0 or qubit2 >= self.num_qubits:
-            raise ValueError("Qubit indices out of range.")
         
         return self.CNOT(qubit1, qubit2).CNOT(qubit2, qubit1).CNOT(qubit1, qubit2)
     

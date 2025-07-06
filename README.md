@@ -134,6 +134,7 @@ Both collapse the state and return a new `QuantumState` consistent with the resu
     - CTdag
     - DCX
     - RC3X
+    - CSWAP
 * **QASM Translation**
 * **Circuit Visualiser**
 * **Unit Tests**
